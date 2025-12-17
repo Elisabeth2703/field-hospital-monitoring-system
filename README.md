@@ -17,19 +17,38 @@
 - Управління медикаментами та устаткуванням
 - Генерації звітів
 
-## Технології
+### Технології
+- Django
+- PostgreSQL / SQLite
+- NGINX
+- Linux Mint
+- VirtualBox
 
-- **Frontend**: React.js, Recharts, Tailwind CSS
-- **Backend**: Node.js, Express, MQTT.js
-- **Database**: PostgreSQL
+### Модулі
+- Patients management
+- Vital signs monitoring
+- Medications inventory
+- Equipment tracking
+
+### Розгортання
+- Django runs on port 8000
+- NGINX configured as reverse proxy
 
 ## Структура проєкту
 ```
-├── docs/          # Документація та звіти
-├── frontend/      # React додаток
-├── backend/       # Node.js сервер
-├── database/      # Схеми БД
-└── tests/         # Тести
+├── docs/                # Документація, звіт, скріншоти
+├── frontend/            # React додаток
+│   ├── src/
+│   │   └── App.js
+│   └── package.json
+├── backend/             # Django проєкт
+│   ├── manage.py
+│   ├── backend/         # settings.py, urls.py
+│   ├── patients/        # Модуль пацієнтів
+│   ├── equipment/       # Модуль медикаментів та обладнання
+│   └── requirements.txt
+├── .gitignore
+└── README.md
 ```
 
 ## Лабораторні роботи
