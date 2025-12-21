@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
    'patients', 
-   'equipment',
+  #  'equipment',
 ]
 
 MIDDLEWARE = [
@@ -78,10 +78,14 @@ WSGI_APPLICATION = 'field_hospital.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+  'default': {
+    'ENGINE': 'djongo',
+    'NAME': 'field_hospital_db',
+    'ENFORCE_SCHEMA': False,
+    'CLIENT': {
+      'host': 'mongodb://localhost:27017',
     }
+  }
 }
 MONGODB_SETTINGS = {
     'host': 'localhost',

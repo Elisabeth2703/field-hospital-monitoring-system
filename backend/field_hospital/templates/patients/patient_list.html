@@ -1,0 +1,193 @@
+{% extends 'patients/base.html' %}
+
+{% block title %}Список пацієнтів{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 30px;">
+  <h1 style="color: #2c3e50; margin-bottom: 20px;">Управління пацієнтами</h1>
+    
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+    <div style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+      <div style="font-size: 14px; margin-bottom: 5px; opacity: 0.9;">Всього пацієнтів</div>
+      <div style="font-size: 36px; font-weight: bold;">{{ total_patients }}</div>
+    </div>
+    
+    <div style="padding: 20px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+      <div style="font-size: 14px; margin-bottom: 5px; opacity: 0.9;">Критичний стан</div>
+      <div style="font-size: 36px; font-weight: bold;">{{ critical_count }}</div>
+    </div>
+    
+    <div style="padding: 20px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+      <div style="font-size: 14px; margin-bottom: 5px; opacity: 0.9;">Типів поранень</div>
+      <div style="font-size: 36px; font-weight: bold;">{{ injury_stats|length }}</div>
+    </div>
+  </div>
+    
+  <div style="display: flex; gap: 10px; margin-bottom: 30px;">
+    <a href="{% url 'register_patient' %}" 
+      style="display: inline-flex; align-items: center; padding: 12px 24px; background: #27ae60; 
+          color: white; text-decoration: none; border-radius: 6px; font-weight: bold;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s;">
+      <span style="font-size: 20px; margin-right: 8px;">+</span>
+      Зареєструвати пацієнта
+    </a>
+  </div>
+</div>
+
+<div style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden;">
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <th style="padding: 15px; text-align: left; font-weight: 600;">ID Браслету</th>
+        <th style="padding: 15px; text-align: left; font-weight: 600;">ПІБ</th>
+        <th style="padding: 15px; text-align: center; font-weight: 600;">Вік</th>
+        <th style="padding: 15px; text-align: left; font-weight: 600;">Тип поранення</th>
+        <th style="padding: 15px; text-align: center; font-weight: 600;">Важкість</th>
+        <th style="padding: 15px; text-align: left; font-weight: 600;">Ліжко</th>
+        <th style="padding: 15px; text-align: left; font-weight: 600;">Дата прийому</th>
+        <th style="padding: 15px; text-align: center; font-weight: 600;">Дії</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for patient in patients %}
+      <tr style="border-bottom: 1px solid #e0e0e0; transition: background 0.2s;"
+        onmouseover="this.style.background='#f8f9fa'" 
+        onmouseout="this.style.background='white'">
+        
+        <td style="padding: 15px;">
+          <code style="background: #e3f2fd; padding: 6px 12px; border-radius: 4px; 
+            font-family: 'Courier New', monospace; color: #1976d2; font-weight: bold;">
+            {{ patient.bracelet_id }}
+          </code>
+        </td>
+          
+        <td style="padding: 15px;">
+          <div style="font-weight: 500; color: #2c3e50;">{{ patient.full_name }}</div>
+          {% if patient.blood_type %}
+          <div style="font-size: 12px; color: #95a5a6; margin-top: 3px;">
+            Група крові: {{ patient.blood_type }}
+          </div>
+          {% endif %}
+        </td>
+          
+        <td style="padding: 15px; text-align: center;">
+          <span style="font-weight: 500; color: #2c3e50;">{{ patient.age }}</span>
+        </td>
+          
+        <td style="padding: 15px;">
+          <div style="display: inline-block; padding: 6px 12px; background: #fff3cd; 
+            border-left: 3px solid #ffc107; border-radius: 4px; font-size: 13px;">
+            {{ patient.injury_type }}
+          </div>
+        </td>
+          
+        <td style="padding: 15px; text-align: center;">
+          {% if patient.severity == 'Критичний' %}
+          <span style="display: inline-block; padding: 8px 16px; color: #2c3e50; border-radius: 20px; font-size: 13px; font-weight: bold;
+            box-shadow: 0 2px 4px rgba(245, 87, 108, 0.3);">
+            🔴{{ patient.severity }}
+          </span>
+          {% elif patient.severity == 'Важкий' %}
+          <span style="display: inline-block; padding: 8px 16px; color: #2c3e50; border-radius: 20px; font-size: 13px; font-weight: bold;
+             box-shadow: 0 2px 4px rgba(250, 112, 154, 0.3);">
+            🟠 {{ patient.severity }}
+          </span>
+          {% elif patient.severity == 'Середній' %}
+          <span style="display: inline-block; padding: 8px 16px; color: #2c3e50; border-radius: 20px; font-size: 13px; font-weight: bold;
+            box-shadow: 0 2px 4px rgba(168, 237, 234, 0.3);">
+            🟡 {{ patient.severity }}
+          </span>
+          {% else %}
+          <span style="display: inline-block; padding: 8px 16px; color: #2c3e50; border-radius: 20px; font-size: 13px; font-weight: bold;
+            box-shadow: 0 2px 4px rgba(150, 230, 161, 0.3);">
+            🟢 {{ patient.severity }}
+          </span>
+          {% endif %}
+        </td>
+          
+        <td style="padding: 15px;">
+          {% if patient.bed_number %}
+          <span style="display: inline-block; padding: 6px 12px; background: #e8f5e9; 
+            color: #2e7d32; border-radius: 4px; font-weight: 500;">
+            🛏️ {{ patient.bed_number }}
+          </span>
+          {% else %}
+          <span style="color: #95a5a6; font-style: italic;">Не призначено</span>
+          {% endif %}
+        </td>
+          
+        <td style="padding: 15px;">
+          <div style="font-size: 14px; color: #2c3e50;">
+            {{ patient.admission_date|date:"d.m.Y" }}
+          </div>
+          <div style="font-size: 12px; color: #95a5a6; margin-top: 2px;">
+            {{ patient.admission_date|date:"H:i" }}
+          </div>
+        </td>
+          
+        <td style="padding: 15px; text-align: center;">
+          <a href="{% url 'patient_detail' patient.bracelet_id %}" 
+            style="display: inline-block; padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 500;
+              box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3); transition: all 0.3s;">
+            Деталі →
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="8" style="padding: 60px 20px; text-align: center;">
+          <div style="color: #95a5a6; font-size: 18px; margin-bottom: 10px;">
+            📋 Список пацієнтів порожній
+          </div>
+          <div style="color: #bdc3c7; font-size: 14px; margin-bottom: 20px;">
+            Зареєструйте першого пацієнта для початку роботи
+          </div>
+          <a href="{% url 'register_patient' %}" 
+            style="display: inline-block; padding: 12px 24px; background: #27ae60; 
+              color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">
+            + Зареєструвати пацієнта
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if injury_stats %}
+<div style="margin-top: 40px;">
+    <h3 style="color: #2c3e50; margin-bottom: 20px;">Статистика по типах поранень</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+      {% for injury_type, count in injury_stats.items %}
+      <div style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); 
+        padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="font-size: 13px; color: #8b4513; margin-bottom: 8px; font-weight: 500;">
+          {{ injury_type }}
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 10px;">
+          <div style="font-size: 36px; font-weight: bold; color: #d2691e;">{{ count }}</div>
+          <div style="font-size: 14px; color: #8b4513;">
+            пацієнтів
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<style>
+  a[href*="register_patient"]:hover,
+    
+  @media (max-width: 768px) {
+    table {
+      font-size: 12px;
+    }
+    th, td {
+      padding: 10px !important;
+    }
+  }
+</style>
+
+{% endblock %}

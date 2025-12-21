@@ -24,5 +24,3 @@ urlpatterns = [
     path('equipment/', include('equipment.urls')),
     path('patients/', include('patients.urls')),
 ]
-
-
