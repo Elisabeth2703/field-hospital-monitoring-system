@@ -1,0 +1,93 @@
+{% extends 'patients/base.html' %}
+
+{% block title %}Реєстрація пацієнта{% endblock %}
+
+{% block content %}
+<h2 style="color: #2c3e50; margin-bottom: 20px;">Реєстрація нового пацієнта</h2>
+
+
+<form method="post" style="max-width: 600px;">
+  {% csrf_token %}
+  
+  <div style="margin-bottom: 15px;">
+    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ПІБ *</label>
+    <input type="text" name="full_name" required 
+      style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+  </div>
+  
+  <div style="margin-bottom: 15px;">
+    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Вік *</label>
+    <input type="number" name="age" required min="1" max="120"
+      style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+  </div>
+  
+  <div style="margin-bottom: 15px;">
+    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ID Браслету *</label>
+    <input type="text" name="bracelet_id" required placeholder="BR-001"
+      style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+  </div>
+  
+  <div style="margin-bottom: 15px;">
+    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Група крові</label>
+    <input type="text" name="blood_type" placeholder="A+"
+      style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+  </div>
+    
+  <div style="margin-bottom: 15px;">
+    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Номер ліжка</label>
+    <input type="text" name="bed_number" placeholder="A-12"
+      style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+  </div>
+  
+  <div style="margin-bottom: 15px;">
+    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Тип поранення *</label>
+    <select name="injury_type" required
+      style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+        {% for value, label in injury_types %}
+        <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+    </select>
+  </div>
+  
+  <div style="margin-bottom: 15px;">
+    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Важкість стану *</label>
+    <select name="severity" required
+      style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+      {% for value, label in severity_choices %}
+      <option value="{{ value }}">{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  
+  <div style="margin-bottom: 15px;">
+    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Діагноз</label>
+    <textarea name="diagnosis" rows="3"
+      style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+  </div>
+  
+  <div style="margin-bottom: 15px;">
+    <label style="display: block; margin-bottom: 5px; font-weight: bold;">План лікування</label>
+    <textarea name="treatment_plan" rows="3"
+      style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+  </div>
+  
+  <div style="margin-bottom: 15px;">
+    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Примітки</label>
+    <textarea name="notes" rows="2"
+      style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+  </div>
+  
+  <div style="display: flex; gap: 10px;">
+    <button type="submit" 
+      style="padding: 12px 30px; background: #27ae60; color: white; 
+        border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+      Зареєструвати пацієнта
+    </button>
+    <a href="{% url 'patient_list' %}"
+      style="padding: 12px 30px; background: #95a5a6; color: white; 
+        text-decoration: none; border-radius: 4px; display: inline-block;">
+      Скасувати
+    </a>
+  </div>
+</form>
+{% endblock %}
