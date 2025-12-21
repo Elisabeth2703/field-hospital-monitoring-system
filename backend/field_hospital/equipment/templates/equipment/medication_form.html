@@ -1,0 +1,348 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if medication %}Редагування медикаменту{% else %}Додавання медикаменту{% endif %} - Польовий Госпіталь №7
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        padding: 40px;
+    }
+
+    .form-header {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e8edf2;
+    }
+
+    .form-header h1 {
+        font-size: 28px;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+    .form-header p {
+        color: #8896a4;
+        font-size: 15px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-label.required::after {
+        content: ' *';
+        color: #e74c3c;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e8edf2;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: border-color 0.3s;
+        font-family: inherit;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #4a90e2;
+    }
+
+    .form-input.error {
+        border-color: #e74c3c;
+    }
+
+    .form-help {
+        font-size: 13px;
+        color: #8896a4;
+        margin-top: 5px;
+    }
+
+    .form-error {
+        font-size: 13px;
+        color: #e74c3c;
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 2px solid #e8edf2;
+    }
+
+    .btn {
+        padding: 14px 28px;
+        border: none;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: #4a90e2;
+        color: white;
+        flex: 1;
+    }
+
+    .btn-primary:hover {
+        background: #357abd;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #5a6c7d;
+        border: 2px solid #e8edf2;
+    }
+
+    .btn-secondary:hover {
+        border-color: #4a90e2;
+        color: #4a90e2;
+    }
+
+    .icon-input-group {
+        position: relative;
+    }
+
+    .icon-input-group .form-input {
+        padding-left: 45px;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 20px;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>
+            {% if medication %}
+                ✏️ Редагування медикаменту
+            {% else %}
+                ➕ Додавання нового медикаменту
+            {% endif %}
+        </h1>
+        <p>Заповніть всі обов'язкові поля для збереження інформації</p>
+    </div>
+
+    <form method="post" id="medicationForm">
+        {% csrf_token %}
+
+        <!-- Назва -->
+        <div class="form-group">
+            <label class="form-label required" for="name">Назва медикаменту</label>
+            <div class="icon-input-group">
+                <span class="input-icon">💊</span>
+                <input type="text" 
+                       class="form-input" 
+                       id="name" 
+                       name="name" 
+                       value="{{ medication.name|default:'' }}"
+                       required
+                       placeholder="Введіть назву медикаменту">
+            </div>
+            <div class="form-help">Повна назва медикаменту</div>
+        </div>
+
+        <!-- Штрих-код -->
+        <div class="form-group">
+            <label class="form-label required" for="barcode">Штрих-код</label>
+            <div class="icon-input-group">
+                <span class="input-icon">📊</span>
+                <input type="text" 
+                       class="form-input" 
+                       id="barcode" 
+                       name="barcode" 
+                       value="{{ medication.barcode|default:'' }}"
+                       required
+                       {% if medication %}readonly{% endif %}
+                       placeholder="Введіть унікальний штрих-код">
+            </div>
+            <div class="form-help">
+                {% if medication %}
+                    Штрих-код не можна змінити після створення
+                {% else %}
+                    Унікальний ідентифікатор медикаменту
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Кількість та Одиниця виміру -->
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label required" for="quantity">Кількість</label>
+                <div class="icon-input-group">
+                    <span class="input-icon">📦</span>
+                    <input type="number" 
+                           class="form-input" 
+                           id="quantity" 
+                           name="quantity" 
+                           value="{{ medication.quantity|default:'' }}"
+                           required
+                           min="0"
+                           placeholder="0">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label required" for="unit">Одиниця виміру</label>
+                <select class="form-input" id="unit" name="unit" required>
+                    <option value="">Оберіть одиницю</option>
+                    <option value="таблетки" {% if medication.unit == 'таблетки' %}selected{% endif %}>Таблетки</option>
+                    <option value="капсули" {% if medication.unit == 'капсули' %}selected{% endif %}>Капсули</option>
+                    <option value="ампули" {% if medication.unit == 'ампули' %}selected{% endif %}>Ампули</option>
+                    <option value="флакони" {% if medication.unit == 'флакони' %}selected{% endif %}>Флакони</option>
+                    <option value="мл" {% if medication.unit == 'мл' %}selected{% endif %}>Мілілітри (мл)</option>
+                    <option value="г" {% if medication.unit == 'г' %}selected{% endif %}>Грами (г)</option>
+                    <option value="шт" {% if medication.unit == 'шт' %}selected{% endif %}>Штуки</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Критичний рівень -->
+        <div class="form-group">
+            <label class="form-label required" for="critical_level">Критичний рівень</label>
+            <div class="icon-input-group">
+                <span class="input-icon">⚠️</span>
+                <input type="number" 
+                       class="form-input" 
+                       id="critical_level" 
+                       name="critical_level" 
+                       value="{{ medication.critical_level|default:'' }}"
+                       required
+                       min="0"
+                       placeholder="Мінімальний запас">
+            </div>
+            <div class="form-help">Мінімальна кількість, нижче якої потрібне поповнення</div>
+        </div>
+
+        <!-- Термін придатності -->
+        <div class="form-group">
+            <label class="form-label" for="expiry_date">Термін придатності</label>
+            <div class="icon-input-group">
+                <span class="input-icon">📅</span>
+                <input type="date" 
+                       class="form-input" 
+                       id="expiry_date" 
+                       name="expiry_date" 
+                       value="{{ medication.expiry_date|default:'' }}">
+            </div>
+            <div class="form-help">Дата, до якої медикамент придатний до використання</div>
+        </div>
+
+        <!-- Постачальник -->
+        <div class="form-group">
+            <label class="form-label" for="supplier">Постачальник</label>
+            <div class="icon-input-group">
+                <span class="input-icon">🏢</span>
+                <input type="text" 
+                       class="form-input" 
+                       id="supplier" 
+                       name="supplier" 
+                       value="{{ medication.supplier|default:'' }}"
+                       placeholder="Назва постачальника">
+            </div>
+            <div class="form-help">Компанія або організація постачальник</div>
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                {% if medication %}
+                    💾 Зберегти зміни
+                {% else %}
+                    ➕ Додати медикамент
+                {% endif %}
+            </button>
+            <a href="{% url 'medication_list' %}" class="btn btn-secondary">
+                ❌ Скасувати
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Form validation
+    document.getElementById('medicationForm').addEventListener('submit', function(e) {
+        const quantity = parseInt(document.getElementById('quantity').value);
+        const criticalLevel = parseInt(document.getElementById('critical_level').value);
+        
+        if (quantity < 0) {
+            e.preventDefault();
+            alert('Кількість не може бути від\'ємною');
+            return false;
+        }
+        
+        if (criticalLevel < 0) {
+            e.preventDefault();
+            alert('Критичний рівень не може бути від\'ємним');
+            return false;
+        }
+    });
+
+    // Auto-generate barcode if empty
+    {% if not medication %}
+    document.getElementById('name').addEventListener('blur', function() {
+        const barcodeInput = document.getElementById('barcode');
+        if (!barcodeInput.value) {
+            const randomCode = 'MED' + Date.now().toString().slice(-6);
+            barcodeInput.value = randomCode;
+        }
+    });
+    {% endif %}
+</script>
+{% endblock %}

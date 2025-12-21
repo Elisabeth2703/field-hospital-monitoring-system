@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Польовий Госпіталь №7{% endblock %}</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo-icon {
+            font-size: 36px;
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .logo-text p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Messages */
+        .messages {
+            max-width: 1400px;
+            margin: 20px auto 0;
+            padding: 0 20px;
+        }
+
+        .alert {
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .alert-icon {
+            font-size: 20px;
+        }
+
+        /* Footer */
+        .footer {
+            background: white;
+            padding: 30px 20px;
+            margin-top: 60px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+            color: #8896a4;
+        }
+
+        .footer-content p {
+            margin-bottom: 10px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .footer-link {
+            color: #4a90e2;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .nav-link {
+                flex: 1;
+                justify-content: center;
+                min-width: 140px;
+            }
+
+            .logo-text h1 {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-link {
+                font-size: 14px;
+                padding: 10px 16px;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="{% url 'home' %}" class="logo">
+                <div class="logo-icon">🏥</div>
+                <div class="logo-text">
+                    <h1>Польовий Госпіталь №7</h1>
+                    <p>Система управління ресурсами</p>
+                </div>
+            </a>
+
+            <nav class="nav">
+                <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                    🏠 Головна
+                </a>
+                <a href="{% url 'medication_list' %}" class="nav-link {% if 'medication' in request.path %}active{% endif %}">
+                    💊 Медикаменти
+                </a>
+                <a href="{% url 'equipment_list' %}" class="nav-link {% if 'equipment' in request.path and 'medication' not in request.path %}active{% endif %}">
+                    🔧 Обладнання
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <span class="alert-icon">
+                {% if message.tags == 'success' %}✅
+                {% elif message.tags == 'error' %}❌
+                {% elif message.tags == 'warning' %}⚠️
+                {% elif message.tags == 'info' %}ℹ️
+                {% endif %}
+            </span>
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p><strong>Польовий Госпіталь №7</strong></p>
+            <p>Система управління медикаментами та обладнанням</p>
+            <div class="footer-links">
+                <a href="{% url 'home' %}" class="footer-link">Головна</a>
+                <a href="{% url 'medication_list' %}" class="footer-link">Медикаменти</a>
+                <a href="{% url 'equipment_list' %}" class="footer-link">Обладнання</a>
+            </div>
+            <p style="margin-top: 15px; font-size: 13px;">
+                © 2025 Польовий Госпіталь №7. Всі права захищені.
+            </p>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
