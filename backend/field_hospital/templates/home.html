@@ -209,6 +209,10 @@
         <a href="{% url 'equipment_home' %}" class="nav-tab {% if request.resolver_match.url_name == 'equipment_home' %}active{% endif %}">
             🏠 Головна
         </a>
+<a href="{% url 'patient_list' %}" class="nav-tab {% if request.resolver_match.url_name == 'patient_list' %}active{% endif %}">
+            🏠 Пацієнти
+        </a>
+
         <a href="{% url 'medication_list' %}" class="nav-tab {% if 'medication' in request.path %}active{% endif %}">
             💊 Медикаменти
         </a>
