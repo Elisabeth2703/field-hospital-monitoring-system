@@ -24,6 +24,7 @@ urlpatterns = [
   path('', TemplateView.as_view(template_name='home.html'), name='home'),  # Головна сторінка
   path('admin/', admin.site.urls),
   path('equipment/', include('equipment.urls')),  # Включаємо URL-ми з додатку 'equipment'
-  path('patients/', include('patients.urls')),
   path('', lambda request: redirect('patient_list')),
+  path('', lambda request: redirect('staff_login')),
+  path('', include('patients.urls')),
 ]

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Реєстрація медперсоналу</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .register-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        max-width: 500px;
+        width: 100%;
+        animation: slideUp 0.5s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .register-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+      }
+
+      .register-icon {
+        font-size: 64px;
+        margin-bottom: 15px;
+      }
+
+      .register-title {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .register-subtitle {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .register-body {
+        padding: 40px 30px;
+        max-height: 70vh;
+        overflow-y: auto;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+
+      .form-input,
+      .form-select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 15px;
+        transition: all 0.3s;
+      }
+
+      .form-input:focus,
+      .form-select:focus {
+        outline: none;
+        border-color: #f5576c;
+        box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
+      }
+
+      .btn-register {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4);
+      }
+
+      .login-link {
+        text-align: center;
+        margin-top: 25px;
+        color: #7f8c8d;
+        font-size: 14px;
+      }
+
+      .login-link a {
+        color: #f5576c;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .login-link a:hover {
+        text-decoration: underline;
+      }
+
+      .alert {
+        padding: 14px 18px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideDown 0.3s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .alert-error {
+        background: #ffebee;
+        color: #c62828;
+        border-left: 4px solid #c62828;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+
+      @media (max-width: 600px) {
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="register-container">
+      <div class="register-header">
+        <div class="register-icon">👨‍⚕️</div>
+        <div class="register-title">Реєстрація медперсоналу</div>
+        <div class="register-subtitle">Створіть обліковий запис</div>
+      </div>
+
+      <div class="register-body">
+        {% if messages %} {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          <span>❌</span>
+          <span>{{ message }}</span>
+        </div>
+        {% endfor %} {% endif %}
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label class="form-label">👤 ПІБ *</label>
+            <input
+              type="text"
+              name="full_name"
+              class="form-input"
+              placeholder="Іваненко Петро Миколайович"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">🆔 Логін *</label>
+              <input
+                type="text"
+                name="username"
+                class="form-input"
+                placeholder="doctor1"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">👔 Роль *</label>
+              <select name="role" class="form-select" required>
+                {% for value, label in role_choices %}
+                <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">🩺 Спеціалізація</label>
+            <input
+              type="text"
+              name="specialization"
+              class="form-input"
+              placeholder="Хірург, Терапевт..."
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">📧 Email</label>
+              <input
+                type="email"
+                name="email"
+                class="form-input"
+                placeholder="email@example.com"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">📱 Телефон</label>
+              <input
+                type="tel"
+                name="phone"
+                class="form-input"
+                placeholder="+380XXXXXXXXX"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">🔒 Пароль *</label>
+            <input
+              type="password"
+              name="password"
+              class="form-input"
+              placeholder="Мінімум 6 символів"
+              required
+              minlength="6"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">🔒 Підтвердження пароля *</label>
+            <input
+              type="password"
+              name="password_confirm"
+              class="form-input"
+              placeholder="Повторіть пароль"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn-register">Зареєструватися</button>
+        </form>
+
+        <div class="login-link">
+          Вже є акаунт?
+          <a href="{% url 'staff_login' %}">Увійти</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

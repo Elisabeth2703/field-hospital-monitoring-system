@@ -124,3 +124,18 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Authentication settings
+LOGIN_REDIRECT_URL = 'doctor_cabinet'
+LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = 'login'
+
+SILENCED_SYSTEM_CHECKS = ["django_mongodb_backend.W003"]
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_HTTPONLY = True
+
+AUTHENTICATION_BACKENDS = [
+  'django.contrib.auth.backends.ModelBackend',
+]
+
+UPDATE_LAST_LOGIN = False
