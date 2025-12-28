@@ -1,4 +1,4 @@
-#!/home/ec/field-hospital-monitoring-system/backend/field_hospital/myenv/bin/python3
+#!/home/ec/field-hospital-monitoring-system/backend/field_hospital/myenv/bin/python3.10
 # -*- coding: utf-8 -*-
 import re
 import sys
