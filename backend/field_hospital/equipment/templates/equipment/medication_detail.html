@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ medication.name }} - Деталі{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .detail-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        padding: 40px;
+        margin-bottom: 20px;
+    }
+
+    .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e8edf2;
+    }
+
+    .detail-title h1 {
+        font-size: 32px;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+    .detail-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+    }
+
+    .btn-edit {
+        background: #fff3e0;
+        color: #f39c12;
+    }
+
+    .btn-delete {
+        background: #ffe5e5;
+        color: #e74c3c;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-back {
+        background: #e3f2fd;
+        color: #2196f3;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+
+    .detail-item h3 {
+        font-size: 13px;
+        color: #8896a4;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .detail-value {
+        font-size: 24px;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .badge.critical {
+        background: #ffe5e5;
+        color: #e74c3c;
+    }
+
+    .badge.success {
+        background: #e8f8f5;
+        color: #27ae60;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-card">
+        <div class="detail-header">
+            <div class="detail-title">
+                <h1>💊 {{ medication.name }}</h1>
+                {% if medication.quantity <= medication.critical_level %}
+                    <span class="badge critical">⚠️ Критичний запас</span>
+                {% else %}
+                    <span class="badge success">✅ Достатньо</span>
+                {% endif %}
+            </div>
+            <div class="detail-actions">
+                <a href="{% url 'medication_list' %}" class="btn btn-back">← Назад</a>
+                <a href="{% url 'medication_update' medication.barcode %}" class="btn btn-edit">✏️ Редагувати</a>
+                <form method="post" action="{% url 'medication_delete' medication.barcode %}" style="display: inline;"
+                      onsubmit="return confirm('Ви впевнені?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-delete">🗑️ Видалити</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="detail-grid">
+            <div class="detail-item">
+                <h3>Штрих-код</h3>
+                <div class="detail-value">{{ medication.barcode }}</div>
+            </div>
+
+            <div class="detail-item">
+                <h3>Кількість</h3>
+                <div class="detail-value">{{ medication.quantity }} {{ medication.unit }}</div>
+            </div>
+
+            <div class="detail-item">
+                <h3>Критичний рівень</h3>
+                <div class="detail-value">{{ medication.critical_level }}</div>
+            </div>
+
+            <div class="detail-item">
+                <h3>Термін придатності</h3>
+                <div class="detail-value">
+                    {% if medication.expiry_date %}
+                        {{ medication.expiry_date|date:"d.m.Y" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <h3>Постачальник</h3>
+                <div class="detail-value" style="font-size: 18px;">
+                    {{ medication.supplier|default:"Не вказано" }}
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <h3>Останнє оновлення</h3>
+                <div class="detail-value" style="font-size: 16px;">
+                    {% if medication.last_updated %}
+                        {{ medication.last_updated|date:"d.m.Y H:i" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logs section if available -->
+    {% if logs %}
+    <div class="detail-card">
+        <h2 style="margin-bottom: 20px;">📝 Історія операцій</h2>
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Операція</th>
+                    <th>Зміна</th>
+                    <th>Користувач</th>
+                    <th>Примітки</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.timestamp|date:"d.m.Y H:i" }}</td>
+                    <td>{{ log.action }}</td>
+                    <td>{{ log.quantity_change|default:"-" }}</td>
+                    <td>{{ log.user|default:"-" }}</td>
+                    <td>{{ log.notes|default:"-" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Деталі обладнання - {{ equipment.name }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>🖥️ {{ equipment.name }}</h1>
+
+    <ul style="list-style:none; padding:0;">
+        <li><strong>QR-код:</strong> {{ equipment.qr_code }}</li>
+        <li><strong>Кількість:</strong> {{ equipment.quantity }}</li>
+        <li><strong>Статус:</strong> {{ equipment.status }}</li>
+
+        <li><strong>Останнє обслуговування:</strong> {{ equipment.last_maintenance|default:"Немає даних" }}</li>
+<li><strong>Дата придбання:</strong> {{ equipment.purchase_date|default:"Немає даних" }}</li>
+<li><strong>Гарантія до:</strong> {{ equipment.warranty_until|default:"Немає даних" }}</li>
+
+        <li><strong>Розташування:</strong> {{ equipment.location }}</li>
+        <li><strong>Виробник:</strong> {{ equipment.manufacturer }}</li>
+    </ul>
+
+    <div style="margin-top:20px;">
+        <a href="{% url 'equipment_update' equipment.qr_code %}" class="btn btn-primary">✏️ Редагувати</a>
+        <form action="{% url 'equipment_delete' equipment.qr_code %}" method="post" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-secondary">❌ Видалити</button>
+</form>
+
+        <a href="{% url 'equipment_list' %}" class="btn btn-secondary">🔙 Повернутися</a>
+    </div>
+</div>
+{% endblock %}

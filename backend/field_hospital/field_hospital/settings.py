@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
    'patients', 
-  #  'equipment',
+    'equipment',
 ]
 
 MIDDLEWARE = [
@@ -56,8 +56,10 @@ ROOT_URLCONF = 'field_hospital.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
-        'APP_DIRS': True,
+        'DIRS': [
+            BASE_DIR / 'templates',  # Глобальні шаблони
+        ],
+        'APP_DIRS': True,  # Це дозволяє шукати шаблони в додатках
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -85,7 +87,11 @@ DATABASES = {
     }
   }
 }
-
+MONGODB_SETTINGS = {
+    'host': 'localhost',
+    'port': 27017,
+    'database': 'medical_system'
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

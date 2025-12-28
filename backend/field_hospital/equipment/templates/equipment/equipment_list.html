@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Обладнання - Польовий Госпіталь №7{% endblock %}
+
+{% block extra_css %}
+<style>
+.table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow-x: auto;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+thead {
+    background: #f8fafb;
+}
+th {
+    padding: 18px 20px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #8896a4;
+    text-transform: uppercase;
+}
+tbody tr {
+    border-bottom: 1px solid #f1f3f5;
+    transition: background 0.2s;
+}
+tbody tr:hover { background: #f8fafb; }
+td {
+    padding: 20px;
+    font-size: 15px;
+    color: #2c3e50;
+}
+.badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.badge.working { background: #27ae60; color: white; }
+.badge.maintenance { background: #f39c12; color: white; }
+.badge.broken { background: #e74c3c; color: white; }
+.badge.reserved { background: #3498db; color: white; }
+.actions { display: flex; gap: 10px; align-items: center; }
+.btn-icon { width: 36px; height: 36px; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; text-decoration: none; background: transparent; }
+.btn-icon.view { background: #e3f2fd; color: #2196f3; }
+.btn-icon.edit { background: #fff3e0; color: #f39c12; }
+.btn-icon.delete { background: #ffe5e5; color: #e74c3c; }
+.btn-icon:hover { transform: scale(1.1); }
+.empty-state { text-align: center; padding: 60px 20px; color: #8896a4; }
+.empty-state-icon { font-size: 64px; margin-bottom: 20px; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Toolbar -->
+<div class="toolbar" style="margin-bottom:20px;">
+    <a href="{% url 'equipment_create' %}" class="btn btn-primary">
+        ➕ Додати обладнання
+    </a>
+</div>
+
+<!-- Table -->
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Назва</th>
+                <th>QR-код</th>
+                <th>Кількість</th>
+                <th>Статус</th>
+                <th>Виробник</th>
+                <th>Останнє обслуговування</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for eq in equipment %}
+            <tr>
+                <td>{{ eq.name }}</td>
+                <td>
+                    {% if eq.qr_code %}
+                        {{ eq.qr_code }}
+                    {% else %}
+                        <span style="color:red;">Відсутній</span>
+                    {% endif %}
+                </td>
+                <td>{{ eq.quantity }}</td>
+                <td>
+                    <span class="badge {{ eq.status }}">
+                        {% if eq.status == 'working' %}Працює{% elif eq.status == 'maintenance' %}На обслуговуванні{% elif eq.status == 'broken' %}Зламано{% elif eq.status == 'reserved' %}Зарезервовано{% else %}{{ eq.status }}{% endif %}
+                    </span>
+                </td>
+                <td>{{ eq.manufacturer|default:"-" }}</td>
+                <td>{{ eq.last_maintenance|date:"d.m.Y" }}</td>
+                <td>
+                    <div class="actions">
+                        {% if eq.qr_code %}
+                        <a href="{% url 'equipment_detail' eq.qr_code %}" class="btn-icon view" title="Переглянути">👁️</a>
+                        <a href="{% url 'equipment_update' eq.qr_code %}" class="btn-icon edit" title="Редагувати">✏️</a>
+                        <form method="post" action="{% url 'equipment_delete' eq.qr_code %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-icon delete" title="Видалити" onclick="return confirm('Ви впевнені?');">🗑️</button>
+                        </form>
+                        {% else %}
+                        <span style="color:red;">Немає дій</span>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔧</div>
+                        <h3>Обладнання не знайдено</h3>
+                        <p>Додайте перше обладнання до системи</p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
