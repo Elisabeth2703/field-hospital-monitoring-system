@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Вхід в систему</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .login-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        max-width: 400px;
+        width: 100%;
+        animation: slideUp 0.5s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .login-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+      }
+
+      .login-icon {
+        font-size: 64px;
+        margin-bottom: 15px;
+      }
+
+      .login-title {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .login-subtitle {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .login-body {
+        padding: 40px 30px;
+      }
+
+      .form-group {
+        margin-bottom: 25px;
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 15px;
+        transition: all 0.3s;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .btn-login {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .register-link {
+        text-align: center;
+        margin-top: 25px;
+        color: #7f8c8d;
+        font-size: 14px;
+      }
+
+      .register-link a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .register-link a:hover {
+        text-decoration: underline;
+      }
+
+      .alert {
+        padding: 14px 18px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideDown 0.3s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .alert-error {
+        background: #ffebee;
+        color: #c62828;
+        border-left: 4px solid #c62828;
+      }
+
+      .alert-success {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border-left: 4px solid #2e7d32;
+      }
+
+      .alert-info {
+        background: #e3f2fd;
+        color: #1565c0;
+        border-left: 4px solid #1565c0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-header">
+        <div class="login-icon">🏥</div>
+        <div class="login-title">Польовий Госпіталь №7</div>
+        <div class="login-subtitle">Система управління пацієнтами</div>
+      </div>
+
+      <div class="login-body">
+        {% if messages %} 
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+              <span>
+                {% if message.tags == 'error' %}
+                  ❌
+                {% elif message.tags == 'success' %}
+                  ✅
+                {% elif message.tags == 'info' or message.tags == 'warning' %}
+                  ℹ️
+                {% endif %}
+              </span>
+              <span>{{ message }}</span>
+            </div>
+        {% endfor %} {% endif %}
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label class="form-label">👤 Логін</label>
+            <input
+              type="text"
+              name="username"
+              class="form-input"
+              placeholder="Введіть ваш логін"
+              required
+              autofocus
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">🔒 Пароль</label>
+            <input
+              type="password"
+              name="password"
+              class="form-input"
+              placeholder="Введіть ваш пароль"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn-login">Увійти в систему</button>
+        </form>
+
+        <div class="register-link">
+          Ще не зареєстровані?
+          <a href="{% url 'staff_register' %}">Створити акаунт</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

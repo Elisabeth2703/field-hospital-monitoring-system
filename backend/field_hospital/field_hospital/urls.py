@@ -19,8 +19,17 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 
 urlpatterns = [
+<<<<<<< HEAD
+  path('', TemplateView.as_view(template_name='home.html'), name='home'),  # Головна сторінка
+  path('admin/', admin.site.urls),
+  path('equipment/', include('equipment.urls')),  # Включаємо URL-ми з додатку 'equipment'
+  path('', lambda request: redirect('patient_list')),
+  path('', lambda request: redirect('staff_login')),
+  path('', include('patients.urls')),
+=======
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('admin/', admin.site.urls),
     path('equipment/', include('equipment.urls')),
     path('patients/', include('patients.urls')),
+>>>>>>> origin/main
 ]

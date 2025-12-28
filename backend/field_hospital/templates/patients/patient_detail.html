@@ -186,4 +186,14 @@
   {% endfor %}
 </div>
 {% endif %}
+
+<div style="margin-top: 30px; text-align: center;">
+  <a href="{% url 'patient_time_series' patient.bracelet_id %}" 
+    style="display: inline-block; padding: 15px 30px; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white; text-decoration: none; border-radius: 8px; font-weight: bold;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); transition: all 0.3s;">
+    📈 Аналіз часових рядів
+  </a>
+</div>
 {% endblock %}
