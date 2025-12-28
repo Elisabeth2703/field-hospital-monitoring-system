@@ -7,7 +7,7 @@ from datetime import datetime, date
 import json
 from .models import Equipment
 import uuid
-# Ініціалізація менеджера MongoDB
+
 db_manager = MongoDBManager()
 mongo = MongoDBManager()
 from .analytics import (
@@ -51,7 +51,7 @@ def medication_list(request):
         else:
             medications = db_manager.get_all_medications()
         
-        # Конвертація ObjectId в string для шаблону
+        
         for med in medications:
             med['_id'] = str(med['_id'])
         
@@ -194,15 +194,17 @@ def medication_delete(request, barcode):
 
 # ============ Equipment Views ============
 
-from .models import Equipment  # імпортуй модель зверху
+
 
 def equipment_list(request):
     try:
+        
         equipments = [e for e in mongo.get_all_equipment() if not e.get('is_deleted', False)]
         return render(request, 'equipment/equipment_list.html', {'equipment': equipments})
     except Exception as e:
         messages.error(request, f'Помилка: {str(e)}')
         return render(request, 'equipment/equipment_list.html', {'equipment': []})
+
 
 
 
@@ -235,7 +237,7 @@ def equipment_detail(request, qr_code):
     for field in ['last_maintenance', 'purchase_date', 'warranty_until']:
         if equipment.get(field):
             try:
-                # Конвертуємо ISO рядок у datetime
+                
                 dt = datetime.fromisoformat(equipment[field])
                 equipment[field] = dt.strftime('%b %d, %Y')  
             except Exception:
@@ -329,16 +331,12 @@ STATUS_DISPLAY = {
 def equipment_statistics(request):
     db = MongoDBManager()
     
-    # Усі обладнання
-    all_equipment = db.get_all_equipment()
+   
+    all_equipment = [eq for eq in db.get_all_equipment() if not eq.get('is_deleted', False)]
     
-    # Загальна кількість об’єктів
     total_objects = len(all_equipment)
-    
-    # Загальна сума quantity
     total_quantity = sum(eq.get('quantity', 0) for eq in all_equipment)
     
-    # Статистика по статусу
     status_dict = {}
     for eq in all_equipment:
         st = eq.get('status', 'unknown')
@@ -346,18 +344,18 @@ def equipment_statistics(request):
     
     status_list = [{'status': k, 'count': v} for k, v in status_dict.items()]
     
-    # Критично мала кількість (якщо quantity <= critical_level)
     low_quantity = [eq for eq in all_equipment if eq.get('quantity', 0) <= eq.get('critical_level', 0)]
     
     context = {
         'status': status_list,
         'low_quantity': low_quantity,
-        'forecast': [],  # поки немає прогнозу
+        'forecast': [],  # Поки немає прогнозу
         'total_objects': total_objects,
         'total_quantity': total_quantity
     }
     
     return render(request, 'equipment/statistics.html', context)
+
 
 from .analytics_medications import medication_basic_stats
 

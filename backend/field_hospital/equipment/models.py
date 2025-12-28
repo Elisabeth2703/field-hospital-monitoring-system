@@ -31,7 +31,7 @@ class Equipment(models.Model):
 
 
 class Medication(models.Model):
-    # Django автоматично створює поле id як primary_key
+   
     name = models.CharField(max_length=255)
     barcode = models.CharField(max_length=100, unique=True)
     quantity = models.IntegerField(default=0)

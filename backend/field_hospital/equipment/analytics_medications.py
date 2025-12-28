@@ -86,7 +86,7 @@ def medication_forecast(months_ahead=3):
     future_X = np.array(range(len(ts), len(ts) + months_ahead)).reshape(-1, 1)
     forecast = model.predict(future_X)
 
-    # Формуємо зрозумілий результат: місяць і прогноз
+    
     future_months = pd.date_range(start=ts.index[-1] + pd.offsets.MonthBegin(),
                                   periods=months_ahead, freq='MS')
 
