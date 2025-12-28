@@ -5,10 +5,16 @@ from django.contrib import messages
 from .mongodb_utils import MongoDBManager
 from datetime import datetime, date
 import json
-
+from .models import Equipment
+import uuid
 # Ініціалізація менеджера MongoDB
 db_manager = MongoDBManager()
-
+mongo = MongoDBManager()
+from .analytics import (
+    equipment_status_analysis,
+    low_quantity_equipment,
+    equipment_forecast
+)
 
 # ============ Головна сторінка ============
 
@@ -188,91 +194,65 @@ def medication_delete(request, barcode):
 
 # ============ Equipment Views ============
 
+from .models import Equipment  # імпортуй модель зверху
+
 def equipment_list(request):
-    """Список обладнання"""
     try:
-        search_query = request.GET.get('search', '')
-        status_filter = request.GET.get('status', '')
-        
-        if search_query:
-            equipment = db_manager.search_equipment(search_query)
-        elif status_filter:
-            equipment = db_manager.get_equipment_by_status(status_filter)
-        else:
-            equipment = db_manager.get_all_equipment()
-        
-        for eq in equipment:
-            eq['_id'] = str(eq['_id'])
-        
-        context = {
-            'equipment': equipment,
-            'search_query': search_query,
-            'status_filter': status_filter,
-        }
-        return render(request, 'equipment/equipment_list.html', context)
+        equipments = [e for e in mongo.get_all_equipment() if not e.get('is_deleted', False)]
+        return render(request, 'equipment/equipment_list.html', {'equipment': equipments})
     except Exception as e:
         messages.error(request, f'Помилка: {str(e)}')
         return render(request, 'equipment/equipment_list.html', {'equipment': []})
 
 
-def equipment_detail(request, qr_code):
-    """Детальна інформація про обладнання"""
-    try:
-        equipment = db_manager.get_equipment(qr_code)
-        
-        if not equipment:
-            messages.error(request, 'Обладнання не знайдено')
-            return redirect('equipment_list')
-        
-        equipment['_id'] = str(equipment['_id'])
-        
-        context = {
-            'equipment': equipment,
-        }
-        return render(request, 'equipment/equipment_detail.html', context)
-    except Exception as e:
-        messages.error(request, f'Помилка: {str(e)}')
-        return redirect('equipment_list')
-
 
 def equipment_create(request):
-    """Створення обладнання"""
     if request.method == 'POST':
-        try:
-            equipment_data = {
-                'name': request.POST.get('name'),
-                'quantity': int(request.POST.get('quantity')),
-                'qr_code': request.POST.get('qr_code'),
-                'status': request.POST.get('status'),
-                'last_maintenance': request.POST.get('last_maintenance'),
-                'location': request.POST.get('location', ''),
-                'manufacturer': request.POST.get('manufacturer', ''),
-                'purchase_date': request.POST.get('purchase_date'),
-                'warranty_until': request.POST.get('warranty_until'),
-            }
-            
-            existing = db_manager.get_equipment(equipment_data['qr_code'])
-            if existing:
-                messages.error(request, 'Обладнання з таким QR-кодом вже існує')
-                return render(request, 'equipment/equipment_form.html', {'equipment': equipment_data})
-            
-            eq_id = db_manager.create_equipment(equipment_data)
-            messages.success(request, 'Обладнання успішно створено')
-            return redirect('equipment_detail', qr_code=equipment_data['qr_code'])
-        except Exception as e:
-            messages.error(request, f'Помилка: {str(e)}')
-    
-    return render(request, 'equipment/equipment_form.html', {})
+        data = {
+            'name': request.POST.get('name'),
+            'qr_code': request.POST.get('qr_code'),
+            'quantity': int(request.POST.get('quantity', 1)),
+            'status': request.POST.get('status'),
+            'is_deleted': False,
+        }
+        mongo.create_equipment(data)
+        messages.success(request, 'Обладнання додано!')
+        return redirect('equipment_list')
+    return render(request, 'equipment/equipment_form.html')
 
 
-def equipment_update(request, qr_code):
-    """Оновлення обладнання"""
+  
+
+from datetime import datetime
+
+def equipment_detail(request, qr_code):
     equipment = db_manager.get_equipment(qr_code)
-    
     if not equipment:
         messages.error(request, 'Обладнання не знайдено')
         return redirect('equipment_list')
-    
+
+    #
+    for field in ['last_maintenance', 'purchase_date', 'warranty_until']:
+        if equipment.get(field):
+            try:
+                # Конвертуємо ISO рядок у datetime
+                dt = datetime.fromisoformat(equipment[field])
+                equipment[field] = dt.strftime('%b %d, %Y')  
+            except Exception:
+                
+                pass
+
+    return render(request, 'equipment/equipment_detail.html', {'equipment': equipment})
+
+
+
+def equipment_update(request, qr_code):
+    equipment = db_manager.get_equipment(qr_code)
+
+    if not equipment:
+        messages.error(request, 'Обладнання не знайдено')
+        return redirect('equipment_list')
+
     if request.method == 'POST':
         try:
             update_data = {
@@ -280,35 +260,33 @@ def equipment_update(request, qr_code):
                 'quantity': int(request.POST.get('quantity')),
                 'status': request.POST.get('status'),
                 'last_maintenance': request.POST.get('last_maintenance'),
-                'location': request.POST.get('location', ''),
-                'manufacturer': request.POST.get('manufacturer', ''),
-                'purchase_date': request.POST.get('purchase_date'),
-                'warranty_until': request.POST.get('warranty_until'),
+                'purchase_date': request.POST.get('purchase_date') or None,
+                'warranty_until': request.POST.get('warranty_until') or None,
+                'location': request.POST.get('location'),
+                'manufacturer': request.POST.get('manufacturer'),
             }
-            
+
             db_manager.update_equipment(qr_code, update_data)
             messages.success(request, 'Обладнання успішно оновлено')
             return redirect('equipment_detail', qr_code=qr_code)
         except Exception as e:
             messages.error(request, f'Помилка оновлення: {str(e)}')
-    
-    equipment['_id'] = str(equipment['_id'])
+
     return render(request, 'equipment/equipment_form.html', {'equipment': equipment})
 
 
+
+
 def equipment_delete(request, qr_code):
-    """Видалення обладнання"""
     if request.method == 'POST':
-        try:
-            count = db_manager.delete_equipment(qr_code)
-            if count > 0:
-                messages.success(request, 'Обладнання успішно видалено')
-            else:
-                messages.warning(request, 'Обладнання не знайдено')
-        except Exception as e:
-            messages.error(request, f'Помилка видалення: {str(e)}')
-    
+        eq = mongo.get_equipment(qr_code)
+        if eq:
+            mongo.update_equipment(qr_code, {'is_deleted': True})
+            messages.success(request, 'Обладнання видалено.')
+        else:
+            messages.warning(request, 'Обладнання не знайдено.')
     return redirect('equipment_list')
+
 
 
 # ============ API Views (JSON) ============
@@ -333,3 +311,71 @@ def api_critical_medications(request):
         return JsonResponse(critical, safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+
+
+from django.shortcuts import render
+from .mongodb_utils import MongoDBManager
+
+# Мапа статусів для відображення
+STATUS_DISPLAY = {
+    'working': 'Працює',
+    'maintenance': 'На обслуговуванні',
+    'broken': 'Зламане',
+}
+
+
+
+def equipment_statistics(request):
+    db = MongoDBManager()
+    
+    # Усі обладнання
+    all_equipment = db.get_all_equipment()
+    
+    # Загальна кількість об’єктів
+    total_objects = len(all_equipment)
+    
+    # Загальна сума quantity
+    total_quantity = sum(eq.get('quantity', 0) for eq in all_equipment)
+    
+    # Статистика по статусу
+    status_dict = {}
+    for eq in all_equipment:
+        st = eq.get('status', 'unknown')
+        status_dict[st] = status_dict.get(st, 0) + eq.get('quantity', 0)
+    
+    status_list = [{'status': k, 'count': v} for k, v in status_dict.items()]
+    
+    # Критично мала кількість (якщо quantity <= critical_level)
+    low_quantity = [eq for eq in all_equipment if eq.get('quantity', 0) <= eq.get('critical_level', 0)]
+    
+    context = {
+        'status': status_list,
+        'low_quantity': low_quantity,
+        'forecast': [],  # поки немає прогнозу
+        'total_objects': total_objects,
+        'total_quantity': total_quantity
+    }
+    
+    return render(request, 'equipment/statistics.html', context)
+
+from .analytics_medications import medication_basic_stats
+
+
+
+def medication_statistics(request):
+    stats = medication_basic_stats()
+
+    context = {
+        'total_objects': stats['total_items'],
+        'total_quantity': stats['total_quantity'],
+        'critical_count': stats['critical_count'],
+        'expired_count': stats['expired_count'],
+        'sufficient_count': stats['sufficient_count'],
+        'critical_medications': stats['critical'],
+        'expired_medications': stats['expired'],
+        'forecast': [],  # на майбутнє
+    }
+
+    return render(request, 'equipment/medication_statistics.html', context)
+

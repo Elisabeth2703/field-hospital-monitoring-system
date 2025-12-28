@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Аналіз медикаментів{% endblock %}
+
+{% block extra_css %}
+<style>
+    body { background: #f4f6f9; }
+
+    .dashboard {
+        max-width: 1200px;
+        margin: 30px auto;
+    }
+
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .card h3 {
+        font-size: 14px;
+        color: #777;
+        margin: 0;
+    }
+
+    .value {
+        font-size: 32px;
+        font-weight: 700;
+    }
+
+    .section {
+        background: #fff;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    }
+
+    .red { color: #e74c3c; }
+    .green { color: #2ecc71; }
+    .orange { color: #f39c12; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+    <h2>Аналіз медикаментів</h2>
+
+    <!-- ===== CARDS ===== -->
+    <div class="cards">
+        <div class="card">
+            <div>
+                <h3>Всього медикаментів</h3>
+                <div class="value">{{ total_objects }}</div>
+            </div>
+            💊
+        </div>
+
+        <div class="card">
+            <div>
+                <h3>Загальна кількість</h3>
+                <div class="value green">{{ total_quantity }}</div>
+            </div>
+            ✔️
+        </div>
+
+        <div class="card">
+            <div>
+                <h3>Критичні</h3>
+                <div class="value red">{{ critical_count }}</div>
+            </div>
+            ⚠️
+        </div>
+
+        <div class="card">
+            <div>
+                <h3>Прострочені</h3>
+                <div class="value orange">{{ expired_count }}</div>
+            </div>
+            📅
+        </div>
+    </div>
+
+    <!-- ===== CRITICAL LIST ===== -->
+    <div class="section">
+        <h3>Критично мала кількість</h3>
+        <ul>
+            {% for med in critical_medications %}
+                <li>{{ med.name }} — {{ med.quantity }}</li>
+            {% empty %}
+                <li>Немає критичних медикаментів</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- ===== EXPIRED ===== -->
+    <div class="section">
+        <h3>Прострочені медикаменти</h3>
+        <ul>
+            {% for med in expired_medications %}
+                <li>{{ med.name }} (до {{ med.expiry_date }})</li>
+            {% empty %}
+                <li>Прострочених немає</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if equipment %}
+        Редагування обладнання
+    {% else %}
+        Додавання обладнання
+    {% endif %} - Польовий Госпіталь №7
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 40px;
+}
+
+.form-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e8edf2;
+}
+
+.form-header h1 {
+    font-size: 28px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.form-header p {
+    color: #8896a4;
+    font-size: 15px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-label.required::after {
+    content: ' *';
+    color: #e74c3c;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e8edf2;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border-color 0.3s;
+    font-family: inherit;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #4a90e2;
+}
+
+.form-help {
+    font-size: 13px;
+    color: #8896a4;
+    margin-top: 5px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid #e8edf2;
+}
+
+.btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: #4a90e2;
+    color: white;
+    flex: 1;
+}
+
+.btn-primary:hover {
+    background: #357abd;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.btn-secondary {
+    background: white;
+    color: #5a6c7d;
+    border: 2px solid #e8edf2;
+}
+
+.btn-secondary:hover {
+    border-color: #4a90e2;
+    color: #4a90e2;
+}
+
+.icon-input-group {
+    position: relative;
+}
+
+.icon-input-group .form-input {
+    padding-left: 45px;
+}
+
+.input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+}
+
+@media (max-width: 768px) {
+    .form-container {
+        padding: 20px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+
+    <div class="form-header">
+        <h1>
+            {% if equipment %}
+                ✏️ Редагування обладнання
+            {% else %}
+                ➕ Додавання нового обладнання
+            {% endif %}
+        </h1>
+        <p>Заповніть всі обовʼязкові поля для збереження інформації</p>
+    </div>
+
+    <form method="post" id="equipmentForm">
+        {% csrf_token %}
+
+        <!-- Назва -->
+        <div class="form-group">
+            <label class="form-label required">Назва обладнання</label>
+            <div class="icon-input-group">
+                <span class="input-icon">🔧</span>
+                <input type="text"
+                       class="form-input"
+                       name="name"
+                       value="{{ equipment.name|default:'' }}"
+                       required>
+            </div>
+        </div>
+
+      
+<!-- QR-код -->
+<div class="form-group">
+    <label class="form-label">QR-код</label>
+    <input type="text"
+           id="qr_code"
+           class="form-input"
+           name="qr_code"
+           value="{{ equipment.qr_code|default:'' }}"
+           readonly>
+    <div class="form-help">
+        {% if equipment %}
+            QR-код не можна змінити після створення
+        {% else %}
+            QR-код генерується автоматично
+        {% endif %}
+    </div>
+</div>
+
+
+
+
+        <!-- Кількість + Статус -->
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label required">Кількість</label>
+                <input type="number"
+                       class="form-input"
+                       name="quantity"
+                       min="0"
+                       value="{{ equipment.quantity|default:0 }}"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label required">Статус</label>
+                <select name="status" class="form-input" required>
+                    <option value="working" {% if equipment.status == 'working' %}selected{% endif %}>Працює</option>
+                    <option value="maintenance" {% if equipment.status == 'maintenance' %}selected{% endif %}>На обслуговуванні</option>
+                    <option value="broken" {% if equipment.status == 'broken' %}selected{% endif %}>Зламано</option>
+                    <option value="reserved" {% if equipment.status == 'reserved' %}selected{% endif %}>Зарезервовано</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Дати -->
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label required">Останнє обслуговування</label>
+                <input type="date"
+                       class="form-input"
+                       name="last_maintenance"
+                       value="{{ equipment.last_maintenance|date:'Y-m-d' }}"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Дата придбання</label>
+                <input type="date"
+                       class="form-input"
+                       name="purchase_date"
+                       value="{{ equipment.purchase_date|date:'Y-m-d' }}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Гарантія до</label>
+            <input type="date"
+                   class="form-input"
+                   name="warranty_until"
+                   value="{{ equipment.warranty_until|date:'Y-m-d' }}">
+        </div>
+
+        <!-- Розташування + Виробник -->
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Розташування</label>
+                <input type="text"
+                       class="form-input"
+                       name="location"
+                       value="{{ equipment.location|default:'' }}"
+                       placeholder="Напр. Склад №2, Палата 5">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Виробник</label>
+                <input type="text"
+                       class="form-input"
+                       name="manufacturer"
+                       value="{{ equipment.manufacturer|default:'' }}">
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                💾 Зберегти
+            </button>
+            <a href="{% url 'equipment_list' %}" class="btn btn-secondary">
+                ❌ Скасувати
+            </a>
+        </div>
+
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const qrInput = document.getElementById('qr_code');
+
+        {% if not equipment %}
+            // Автоматична генерація QR-коду
+            qrInput.value = 'EQ-' + Date.now().toString().slice(-12);
+        {% endif %}
+    });
+</script>
+{% endblock %}

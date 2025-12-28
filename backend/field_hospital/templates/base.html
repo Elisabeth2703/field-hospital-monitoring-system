@@ -19,7 +19,6 @@
             line-height: 1.6;
         }
 
-        /* Header */
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -61,7 +60,6 @@
             opacity: 0.9;
         }
 
-        /* Navigation */
         .nav {
             display: flex;
             gap: 10px;
@@ -90,14 +88,12 @@
             background: rgba(255,255,255,0.25);
         }
 
-        /* Main Content */
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 30px 20px;
         }
 
-        /* Messages */
         .messages {
             max-width: 1400px;
             margin: 20px auto 0;
@@ -113,17 +109,6 @@
             gap: 12px;
             font-weight: 500;
             animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .alert-success {
@@ -150,11 +135,10 @@
             border-left: 4px solid #17a2b8;
         }
 
-        .alert-icon {
-            font-size: 20px;
+        main.container {
+            min-height: 60vh;
         }
 
-        /* Footer */
         .footer {
             background: white;
             padding: 30px 20px;
@@ -167,10 +151,6 @@
             margin: 0 auto;
             text-align: center;
             color: #8896a4;
-        }
-
-        .footer-content p {
-            margin-bottom: 10px;
         }
 
         .footer-links {
@@ -191,7 +171,6 @@
             text-decoration: underline;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -208,88 +187,87 @@
                 justify-content: center;
                 min-width: 140px;
             }
-
-            .logo-text h1 {
-                font-size: 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .nav-link {
-                font-size: 14px;
-                padding: 10px 16px;
-            }
         }
     </style>
 
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <a href="{% url 'home' %}" class="logo">
-                <div class="logo-icon">🏥</div>
-                <div class="logo-text">
-                    <h1>Польовий Госпіталь №7</h1>
-                    <p>Система управління ресурсами</p>
-                </div>
+
+<header class="header">
+    <div class="header-content">
+        <a href="{% url 'home' %}" class="logo">
+            <div class="logo-icon">🏥</div>
+            <div class="logo-text">
+                <h1>Польовий Госпіталь №7</h1>
+                <p>Система управління ресурсами</p>
+            </div>
+        </a>
+
+        <nav class="nav">
+            <a href="{% url 'home' %}"
+               class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                🏠 Головна
             </a>
 
-            <nav class="nav">
-                <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-                    🏠 Головна
-                </a>
-                <a href="{% url 'medication_list' %}" class="nav-link {% if 'medication' in request.path %}active{% endif %}">
-                    💊 Медикаменти
-                </a>
-                <a href="{% url 'equipment_list' %}" class="nav-link {% if 'equipment' in request.path and 'medication' not in request.path %}active{% endif %}">
-                    🔧 Обладнання
-                </a>
-            </nav>
-        </div>
-    </header>
+            <a href="{% url 'medication_list' %}"
+               class="nav-link {% if 'medication' in request.path %}active{% endif %}">
+                💊 Медикаменти
+            </a>
 
-    <!-- Messages -->
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-            <span class="alert-icon">
-                {% if message.tags == 'success' %}✅
-                {% elif message.tags == 'error' %}❌
-                {% elif message.tags == 'warning' %}⚠️
-                {% elif message.tags == 'info' %}ℹ️
-                {% endif %}
-            </span>
-            <span>{{ message }}</span>
-        </div>
-        {% endfor %}
+            <a href="{% url 'equipment_list' %}"
+               class="nav-link {% if 'equipment' in request.path and 'medication' not in request.path and request.resolver_match.url_name != 'equipment_statistics' %}active{% endif %}">
+                🔧 Обладнання
+            </a>
+
+            <a href="{% url 'equipment_statistics' %}"
+               class="nav-link {% if request.resolver_match.url_name == 'equipment_statistics' %}active{% endif %}">
+                📊 Звіти
+            </a>
+        </nav>
     </div>
-    {% endif %}
+</header>
 
-    <!-- Main Content -->
-    <main class="container">
-        {% block content %}{% endblock %}
-    </main>
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        <span>
+            {% if message.tags == 'success' %}✅
+            {% elif message.tags == 'error' %}❌
+            {% elif message.tags == 'warning' %}⚠️
+            {% elif message.tags == 'info' %}ℹ️
+            {% endif %}
+        </span>
+        <span>{{ message }}</span>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <p><strong>Польовий Госпіталь №7</strong></p>
-            <p>Система управління медикаментами та обладнанням</p>
-            <div class="footer-links">
-                <a href="{% url 'home' %}" class="footer-link">Головна</a>
-                <a href="{% url 'medication_list' %}" class="footer-link">Медикаменти</a>
-                <a href="{% url 'equipment_list' %}" class="footer-link">Обладнання</a>
-<a href="{% url 'patient_list' %}" class="footer-link">Пацієнти</a>
-            </div>
-            <p style="margin-top: 15px; font-size: 13px;">
-                © 2025 Польовий Госпіталь №7. Всі права захищені.
-            </p>
+<main class="container">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+    <div class="footer-content">
+        <p><strong>Польовий Госпіталь №7</strong></p>
+        <p>Система управління медикаментами та обладнанням</p>
+
+        <div class="footer-links">
+            <a href="{% url 'home' %}" class="footer-link">Головна</a>
+            <a href="{% url 'medication_list' %}" class="footer-link">Медикаменти</a>
+            <a href="{% url 'equipment_list' %}" class="footer-link">Обладнання</a>
+            <a href="{% url 'equipment_statistics' %}" class="footer-link">Звіти</a>
         </div>
-    </footer>
 
-    {% block extra_js %}{% endblock %}
+        <p style="margin-top: 15px; font-size: 13px;">
+            © 2025 Польовий Госпіталь №7. Всі права захищені.
+        </p>
+    </div>
+</footer>
+
+{% block extra_js %}{% endblock %}
+
 </body>
 </html>

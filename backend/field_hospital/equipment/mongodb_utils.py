@@ -70,7 +70,7 @@ class MongoDBManager:
     
     def delete_equipment(self, qr_code):
         """Видалення обладнання"""
-        result = self.equipment.delete_one({'qr_code': qr_code})
+        result = self.equipment.delete_one({'qr_code': str(qr_code)})
         return result.deleted_count
     
     # ============ Розширені запити ============
