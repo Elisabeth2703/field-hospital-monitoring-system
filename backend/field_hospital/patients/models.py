@@ -119,20 +119,3 @@ class MedicalStaff(models.Model):
   def check_password(self, raw_password):
     """Перевірити пароль"""
     return check_password(raw_password, self.password)
-
-  """Класифікація поранень для аналітики"""
-  _id = models.ObjectIdField(primary_key=True)
-  patient_bracelet_id = models.CharField(max_length=50, verbose_name="ID браслету пацієнта")
-  injury_type = models.CharField(max_length=100, verbose_name="Тип поранення")
-  severity = models.CharField(max_length=50, verbose_name="Важкість")
-  diagnosis = models.TextField(verbose_name="Діагноз")
-  treatment_plan = models.TextField(blank=True, verbose_name="План лікування")
-  classification_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата класифікації")
-
-  class Meta:
-      db_table = 'injury_classifications'
-      verbose_name = "Класифікація поранення"
-      verbose_name_plural = "Класифікації поранень"
-
-  def __str__(self):
-      return f"{self.injury_type} - {self.severity}"
