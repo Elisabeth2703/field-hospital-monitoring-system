@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from django.http import HttpResponse
 from django.contrib import messages
 from .models import Patient, VitalSigns, InjuryClassification, MedicalStaff
 from .analytics import PatientAnalytics
 from datetime import datetime
+from django.utils import timezone
+from django.shortcuts import redirect
 import json
 
 from functools import wraps
@@ -78,7 +81,7 @@ def patient_detail(request, pk):
 
 @login_required
 def add_vital_signs(request, bracelet_id):
-  return HttpResponse("Введення показників (в розробці)")
+  return redirect('patient_detail', pk=bracelet_id)
 
 @login_required
 def register_patient(request):

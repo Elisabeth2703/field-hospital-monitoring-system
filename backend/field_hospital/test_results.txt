@@ -1,0 +1,140 @@
+Operations to perform:
+  Synchronize unmigrated apps: messages, staticfiles
+  Apply all migrations: admin, auth, contenttypes, equipment, patients, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+This version of djongo does not support "NULL, NOT NULL column validation check" fully. Visit https://nesdis.github.io/djongo/support/
+  Applying contenttypes.0001_initial...This version of djongo does not support "schema validation using CONSTRAINT" fully. Visit https://nesdis.github.io/djongo/support/
+ OK
+  Applying auth.0001_initial...This version of djongo does not support "schema validation using KEY" fully. Visit https://nesdis.github.io/djongo/support/
+This version of djongo does not support "schema validation using REFERENCES" fully. Visit https://nesdis.github.io/djongo/support/
+ OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name...This version of djongo does not support "COLUMN DROP NOT NULL " fully. Visit https://nesdis.github.io/djongo/support/
+This version of djongo does not support "DROP CASCADE" fully. Visit https://nesdis.github.io/djongo/support/
+ OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying equipment.0001_initial... OK
+  Applying equipment.0002_alter_equipment_qr_code... OK
+  Applying patients.0001_initial... OK
+  Applying patients.0002_medicalstaff... OK
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+Vitals after patient deletion: 1
+
+=== Starting Complete Patient Registration Workflow Test ===
+Step 1: Creating patient...
+ Patient created with bracelet_id: TEST-001
+Step 2: Creating vital signs...
+ VitalSigns created for bracelet: TEST-001
+Step 3: Verifying vital signs in database...
+Found 1 vital signs records
+Step 4: Checking vital signs details...
+ All vital signs details correct
+Step 5: Verifying patient-vitals relationship via bracelet_id...
+ Patient-vitals relationship verified via bracelet_id
+Step 6: Creating injury classification...
+ Injury classification created
+=== Test Completed Successfully ===
+
+
+ Розподіл за типами поранень:
+  Вогнепальне поранення: 2
+  Осколкове поранення: 2
+  Контузія: 2
+  Опіки: 2
+  Переломи: 2
+
+ Розподіл за важкістю:
+  Важкий: 3
+  Критичний: 2
+  Середній: 3
+  Легкий: 2
+ Classification created with ID: 69583ff51f079adba541fa7b
+ Staff created with ID: 69583ff71f079adba541fbb1
+
+ Виявлено аномалій: 0 з 30
+
+ Статистика пульсу:
+  Середнє: 63.27
+  Медіана: 64.00
+  Станд. відхилення: 5.94
+  Мін-Макс: 55-74
+
+ Кореляція пульс-тиск: -0.111
+
+ Перцентилі температури:
+  P25: 36.32°C
+  P50: 36.63°C
+  P75: 36.87°C
+  P90: 36.98°C
+  P95: 37.05°C
+
+ DataFrame створено: (20, 5)
+
+ Середній вік по типах поранень:
+injury_type
+Вогнепальне поранення    29.0
+Контузія                 29.5
+Осколкове поранення      30.0
+Name: age, dtype: float64
+
+ Зведена таблиця (тип * важкість):
+severity               Важкий  Легкий  Середній
+injury_type                                    
+Вогнепальне поранення       0       7         0
+Контузія                    6       0         0
+Осколкове поранення         0       0         7
+
+ Статистика життєвих показників:
+       heart_rate  temperature  blood_pressure_sys  oxygen_saturation
+count    20.00000    20.000000            20.00000          20.000000
+mean     79.00000    36.400000           119.50000          97.000000
+std      11.83216     0.290191             5.91608           1.450953
+min      60.00000    36.000000           110.00000          95.000000
+25%      69.50000    36.200000           114.75000          96.000000
+50%      79.00000    36.400000           119.50000          97.000000
+75%      88.50000    36.600000           124.25000          98.000000
+max      98.00000    36.800000           129.00000          99.000000
+ Patient created with ID: 695840011f079adba5420147
+View response status: 302
+ Vital signs added for bracelet: TEST-PATIENT-001
+Patient detail view test skipped: Reverse for 'patient_detail' with keyword arguments '{'bracelet_id': 'TEST-PATIENT-001'}' not found. 1 pattern(s) tried: ['patients/patients/(?P<pk>[^/]+)/$']
+Patient list view test skipped: 302 != 200
+View test skipped: Reverse for 'patient_register' not found. 'patient_register' is not a valid view function or pattern name.
+ Patient registered with bracelet_id: NEW-BR-001
+ Patient updated successfully
+
+ Точність моделі класифікації: 100.00%
+
+ Важливість ознак:
+  heart_rate: 0.452
+  temperature: 0.200
+  bp_sys: 0.277
+  oxygen: 0.057
+  age: 0.014
+
+ Передбачена важкість: Середній
+
+ Пацієнтів за місяць: 6
+
+ Пацієнтів за квартал: 9
+
+ Пацієнтів за тиждень: 3
+
+ Пацієнтів за рік: 15
+ VitalSigns created with ID: 6958400f1f079adba54208f0
