@@ -16,7 +16,7 @@ urlpatterns = [
     path('medications/<str:barcode>/delete/', views.medication_delete, name='medication_delete'),
 
     # Equipment URLs
-    path('', views.equipment_list, name='equipment_list'),  # /equipment/ → список обладнання
+    path('', views.equipment_list, name='equipment_list'),  
     path('create/', views.equipment_create, name='equipment_create'),
     path('statistics/', views.equipment_statistics, name='equipment_statistics'),
 
