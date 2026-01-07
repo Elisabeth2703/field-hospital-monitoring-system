@@ -36,7 +36,8 @@ logs/
 
 # Testing
 coverage/
-
+__pycache__/
+*.pyc
 # Temporary files
 tmp/
 temp/

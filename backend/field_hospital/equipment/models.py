@@ -2,15 +2,15 @@ import uuid
 from djongo import models
 
 from django.db import models
-# Приклад для Equipment
+
 STATUS_CHOICES = [
-    ('working', 'Working'),      # робоче обладнання
-    ('maintenance', 'Maintenance'),  # на обслуговуванні
-    ('broken', 'Broken'),        # зламане
+    ('working', 'Working'),      
+    ('maintenance', 'Maintenance'),  
+    ('broken', 'Broken'),        
 ]
 
 class Equipment(models.Model):
-    # Django автоматично створює id
+    
     name = models.CharField(max_length=255)
     qr_code = models.CharField(max_length=100, unique=True)
     quantity = models.IntegerField(default=1)
@@ -20,7 +20,7 @@ class Equipment(models.Model):
     warranty_until = models.DateField(null=True, blank=True)
     location = models.CharField(max_length=255, blank=True)
     manufacturer = models.CharField(max_length=255, blank=True)
-    is_active = models.BooleanField(default=True)  # логічне видалення
+    is_active = models.BooleanField(default=True)  
     last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
