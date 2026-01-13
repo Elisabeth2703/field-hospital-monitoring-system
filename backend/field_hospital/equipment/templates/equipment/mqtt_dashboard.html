@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>MQTT стан обладнання</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Назва</th>
+                <th>QR</th>
+                <th>Кількість</th>
+                <th>Критичний рівень</th>
+                <th>Статус</th>
+                <th>Оновлено</th>
+            </tr>
+        </thead>
+        <tbody id="mqtt-table-body">
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function fetchMQTTData() {
+    fetch("{% url 'api_mqtt_equipment' %}")
+    .then(response => response.json())
+    .then(data => {
+        const tbody = document.getElementById('mqtt-table-body');
+        tbody.innerHTML = '';
+        if (data.length === 0) {
+            tbody.innerHTML = `<tr>
+                <td colspan="6">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📡</div>
+                        <h3>Немає MQTT-даних</h3>
+                        <p>Очікування повідомлень від обладнання…</p>
+                    </div>
+                </td>
+            </tr>`;
+            return;
+        }
+        data.forEach(eq => {
+            let statusClass = eq.status || '';
+            let statusText = '';
+            if(eq.status === 'working') statusText = 'Працює';
+            else if(eq.status === 'maintenance') statusText = 'На обслуговуванні';
+            else if(eq.status === 'broken') statusText = 'Зламано';
+            else statusText = eq.status || '';
+            let criticalHtml = eq.quantity <= eq.critical_level 
+                ? '<span class="badge critical">КРИТИЧНО</span>' 
+                : eq.critical_level;
+            tbody.innerHTML += `<tr>
+                <td>${eq.name}</td>
+                <td>${eq.qr_code}</td>
+                <td>${eq.quantity}</td>
+                <td>${criticalHtml}</td>
+                <td><span class="badge ${statusClass}">${statusText}</span></td>
+                <td>${new Date(eq.last_updated).toLocaleString()}</td>
+            </tr>`;
+        });
+    })
+    .catch(err => console.error(err));
+}
+fetchMQTTData();
+setInterval(fetchMQTTData, 5000);
+</script>
+{% endblock %}
+

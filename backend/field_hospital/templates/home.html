@@ -242,6 +242,9 @@
         <div class="dropdown-menu">
             <a href="{% url 'medication_statistics' %}">Аналіз медикаментів</a>
             <a href="{% url 'equipment_statistics' %}">Аналіз обладнання</a>
+            <a href="{% url 'mqtt_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'mqtt_dashboard' %}active{% endif %}">
+   📡 MQTT
+</a>
         </div>
     </div>
 </div>

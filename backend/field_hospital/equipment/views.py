@@ -7,6 +7,8 @@ from datetime import datetime, date
 import json
 from .models import Equipment
 import uuid
+from django.shortcuts import render
+from django.utils import timezone
 
 db_manager = MongoDBManager()
 mongo = MongoDBManager()
@@ -16,12 +18,12 @@ from .analytics import (
     equipment_forecast
 )
 
-# ============ Головна сторінка ============
+
 
 def equipment_home(request):
     """Головна сторінка модуля обладнання"""
     try:
-        # Отримання статистики
+        
         med_stats = db_manager.get_medication_statistics()
         eq_stats = db_manager.get_equipment_statistics()
         critical_meds = db_manager.get_critical_medications()
@@ -39,7 +41,7 @@ def equipment_home(request):
         return render(request, 'equipment/home.html', {})
 
 
-# ============ Medications Views ============
+
 
 def medication_list(request):
     """Список всіх медикаментів"""
@@ -74,10 +76,10 @@ def medication_detail(request, barcode):
             messages.error(request, 'Медикамент не знайдено')
             return redirect('medication_list')
         
-        # Отримання логів
+        
         logs = db_manager.get_medication_logs(barcode, limit=20)
         
-        # Отримання тренду використання
+       
         usage_trend = db_manager.get_medication_usage_trend(barcode, days=30)
         
         medication['_id'] = str(medication['_id'])
@@ -109,7 +111,7 @@ def medication_create(request):
                 'supplier': request.POST.get('supplier', ''),
             }
             
-            # Перевірка унікальності штрих-коду
+           
             existing = db_manager.get_medication(medication_data['barcode'])
             if existing:
                 messages.error(request, 'Медикамент з таким штрих-кодом вже існує')
@@ -117,7 +119,7 @@ def medication_create(request):
             
             med_id = db_manager.create_medication(medication_data)
             
-            # Логування створення
+            
             db_manager.log_medication_action(
                 medication_data['barcode'],
                 'added',
@@ -156,7 +158,7 @@ def medication_update(request, barcode):
             
             db_manager.update_medication(barcode, update_data)
             
-            # Логування зміни кількості
+           
             quantity_change = update_data['quantity'] - old_quantity
             if quantity_change != 0:
                 action = 'restocked' if quantity_change > 0 else 'used'
@@ -192,7 +194,7 @@ def medication_delete(request, barcode):
     return redirect('medication_list')
 
 
-# ============ Equipment Views ============
+
 
 
 
@@ -291,7 +293,7 @@ def equipment_delete(request, qr_code):
 
 
 
-# ============ API Views (JSON) ============
+
 
 @require_http_methods(["GET"])
 def api_medication_statistics(request):
@@ -319,7 +321,7 @@ def api_critical_medications(request):
 from django.shortcuts import render
 from .mongodb_utils import MongoDBManager
 
-# Мапа статусів для відображення
+
 STATUS_DISPLAY = {
     'working': 'Працює',
     'maintenance': 'На обслуговуванні',
@@ -377,3 +379,43 @@ def medication_statistics(request):
 
     return render(request, 'equipment/medication_statistics.html', context)
 
+from django.shortcuts import render
+from django.utils import timezone
+ 
+def mqtt_dashboard(request):
+    mongo = MongoDBManager(db_name="field_hospital_db")
+    collection = mongo.db["equipment_status"]
+    raw = list(collection.find({}).sort("last_updated", -1))
+    latest = {}
+    for item in raw:
+        qr = item.get("qr_code")
+        if qr and qr not in latest:
+            latest[qr] = item
+    equipment = []
+    for eq in latest.values():
+        equipment.append({
+            "name": eq.get("name", "-"),
+            "qr_code": eq.get("qr_code"),
+            "quantity": eq.get("quantity", 0),
+            "critical_level": eq.get("critical_level", 0),
+            "status": eq.get("status", "unknown"),
+            "last_updated": eq.get("last_updated", timezone.now())
+        })
+    return render(request, "equipment/mqtt_dashboard.html", {"equipment": equipment})
+
+@require_http_methods(["GET"])
+def api_mqtt_equipment(request):
+    mongo_client = MongoDBManager(db_name="field_hospital_db")
+    collection = mongo_client.db['equipment_status']
+    raw_data = list(collection.find({}).sort("last_updated", -1))
+    data = []
+    for eq in raw_data:
+        data.append({
+            'name': eq.get('name', '-'),
+            'qr_code': eq.get('qr_code', '-'),
+            'quantity': eq.get('quantity', 0),
+            'critical_level': eq.get('critical_level', 0),
+            'status': eq.get('status', 'unknown'),
+            'last_updated': eq.get('last_updated').isoformat() if eq.get('last_updated') else None
+        })
+    return JsonResponse(data, safe=False)
