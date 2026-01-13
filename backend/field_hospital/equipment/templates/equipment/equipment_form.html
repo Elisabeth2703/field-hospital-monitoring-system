@@ -174,7 +174,7 @@
     <form method="post" id="equipmentForm">
         {% csrf_token %}
 
-        <!-- Назва -->
+    
         <div class="form-group">
             <label class="form-label required">Назва обладнання</label>
             <div class="icon-input-group">
@@ -188,7 +188,7 @@
         </div>
 
       
-<!-- QR-код -->
+
 <div class="form-group">
     <label class="form-label">QR-код</label>
     <input type="text"
@@ -209,7 +209,7 @@
 
 
 
-        <!-- Кількість + Статус -->
+        
         <div class="form-row">
             <div class="form-group">
                 <label class="form-label required">Кількість</label>
@@ -260,7 +260,7 @@
                    value="{{ equipment.warranty_until|date:'Y-m-d' }}">
         </div>
 
-        <!-- Розташування + Виробник -->
+        
         <div class="form-row">
             <div class="form-group">
                 <label class="form-label">Розташування</label>
@@ -280,7 +280,7 @@
             </div>
         </div>
 
-        <!-- Actions -->
+        
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
                 💾 Зберегти
@@ -300,7 +300,7 @@
         const qrInput = document.getElementById('qr_code');
 
         {% if not equipment %}
-            // Автоматична генерація QR-коду
+            
             qrInput.value = 'EQ-' + Date.now().toString().slice(-12);
         {% endif %}
     });

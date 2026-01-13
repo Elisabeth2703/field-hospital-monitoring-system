@@ -281,7 +281,7 @@
 {% endblock %}
 
 {% block content %}
-<!-- Stats -->
+
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-info">
@@ -318,7 +318,7 @@
     </div>
 </div>
 
-<!-- Toolbar -->
+
 <div class="toolbar">
     <form method="get" class="search-box">
         <input type="text" 
@@ -331,7 +331,7 @@
     </a>
 </div>
 
-<!-- Filters -->
+
 <div class="filter-buttons">
     <a href="{% url 'medication_list' %}" class="filter-btn {% if not request.GET.filter %}active{% endif %}">
         Всі
@@ -347,7 +347,7 @@
     </a>
 </div>
 
-<!-- Table -->
+
 <div class="table-container">
     <table>
         <thead>

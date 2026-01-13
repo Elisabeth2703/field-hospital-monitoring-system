@@ -207,7 +207,7 @@
 {% endblock %}
 
 {% block content %}
-<!-- Main Stats -->
+
 <div class="stats-grid">
     <div class="stat-card" onclick="window.location.href='{% url 'medication_list' %}'">
         <div class="stat-info">
@@ -252,7 +252,7 @@
     </div>
 </div>
 
-<!-- Quick Actions -->
+
 <div class="quick-actions">
     <a href="{% url 'medication_create' %}" class="action-btn">
         <span>➕</span> Додати медикамент
@@ -266,11 +266,11 @@
 </div>
 
 
-<!-- Critical Medications and Maintenance -->
+
 <h2 class="section-title">⚠️ Потребують уваги</h2>
 
 <div class="cards-grid">
-    <!-- Critical Medications -->
+   
     <div class="info-card">
         <div class="card-header">
             <h3>💊 Критичні медикаменти</h3>
@@ -299,7 +299,7 @@
         </div>
     </div>
 
-    <!-- Equipment Maintenance -->
+    
     <div class="info-card">
         <div class="card-header">
             <h3>🔧 Потребує обслуговування</h3>
@@ -329,7 +329,7 @@
     </div>
 </div>
 
-<!-- Recent Activity -->
+
 <h2 class="section-title">📝 Останні операції</h2>
 
 <div class="info-card">
@@ -346,7 +346,7 @@
     </div>
 </div>
 
-<!-- Statistics Overview -->
+
 <h2 class="section-title">📊 Статистика</h2>
 
 <div class="cards-grid">

@@ -182,7 +182,7 @@
     <form method="post" id="medicationForm">
         {% csrf_token %}
 
-        <!-- Назва -->
+       
         <div class="form-group">
             <label class="form-label required" for="name">Назва медикаменту</label>
             <div class="icon-input-group">
@@ -198,7 +198,7 @@
             <div class="form-help">Повна назва медикаменту</div>
         </div>
 
-        <!-- Штрих-код -->
+        <
         <div class="form-group">
             <label class="form-label required" for="barcode">Штрих-код</label>
             <div class="icon-input-group">
@@ -221,7 +221,7 @@
             </div>
         </div>
 
-        <!-- Кількість та Одиниця виміру -->
+        
         <div class="form-row">
             <div class="form-group">
                 <label class="form-label required" for="quantity">Кількість</label>
@@ -253,7 +253,7 @@
             </div>
         </div>
 
-        <!-- Критичний рівень -->
+        
         <div class="form-group">
             <label class="form-label required" for="critical_level">Критичний рівень</label>
             <div class="icon-input-group">
@@ -270,7 +270,7 @@
             <div class="form-help">Мінімальна кількість, нижче якої потрібне поповнення</div>
         </div>
 
-        <!-- Термін придатності -->
+        
         <div class="form-group">
             <label class="form-label" for="expiry_date">Термін придатності</label>
             <div class="icon-input-group">
@@ -284,7 +284,7 @@
             <div class="form-help">Дата, до якої медикамент придатний до використання</div>
         </div>
 
-        <!-- Постачальник -->
+       
         <div class="form-group">
             <label class="form-label" for="supplier">Постачальник</label>
             <div class="icon-input-group">
@@ -299,7 +299,7 @@
             <div class="form-help">Компанія або організація постачальник</div>
         </div>
 
-        <!-- Actions -->
+       
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
                 {% if medication %}
@@ -316,7 +316,7 @@
 </div>
 
 <script>
-    // Form validation
+  
     document.getElementById('medicationForm').addEventListener('submit', function(e) {
         const quantity = parseInt(document.getElementById('quantity').value);
         const criticalLevel = parseInt(document.getElementById('critical_level').value);
@@ -334,7 +334,7 @@
         }
     });
 
-    // Auto-generate barcode if empty
+    
     {% if not medication %}
     document.getElementById('name').addEventListener('blur', function() {
         const barcodeInput = document.getElementById('barcode');
